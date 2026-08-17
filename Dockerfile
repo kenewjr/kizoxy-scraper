@@ -51,7 +51,9 @@ COPY pyproject.toml .
 COPY README.md .
 RUN pip install --no-cache-dir .
 
-# Download Camoufox browser binaries (ensure no invalid dummy GITHUB_TOKEN interferes)
+# Camoufox stores browsers in a per-user cache. Pin one shared path so the
+# root build step and the non-root runtime user resolve the same installation.
+ENV XDG_CACHE_HOME=/app/.cache
 ENV GITHUB_TOKEN=""
 RUN python -m camoufox fetch
 
