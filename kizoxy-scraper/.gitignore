@@ -1,0 +1,16 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+data/
+camoufox/
+.camoufox/
+dist/
+build/
+*.egg-info/
+
+# Local AI context
+.agents/
+MEMORY.md

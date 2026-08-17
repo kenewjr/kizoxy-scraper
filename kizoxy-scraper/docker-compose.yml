@@ -1,0 +1,32 @@
+services:
+  kizoxy-scraper:
+    build: .
+    container_name: kizoxy-scraper
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8100:8100"
+    # Load the full .env file first so every setting in it (API_KEY,
+    # BROWSER_MAX_USES, TIKTOK_SESSION_ID, etc.) actually reaches the
+    # container. Without this, only the four vars explicitly listed below
+    # were ever passed through, and app/config.py silently fell back to
+    # its hardcoded defaults for everything else.
+    env_file:
+      - .env
+    environment:
+      # BUG FIX: this used to be API_SHARED_SECRET, which app/config.py
+      # never reads (the field is `api_key`, sourced from the API_KEY env
+      # var). The container was therefore always falling back to the
+      # hardcoded default secret regardless of what was in .env, while
+      # Kizoxy's Node client sent the real secret from ITS .env — a
+      # mismatch that verify_shared_secret() rejects with HTTP 403.
+      - API_KEY=${API_KEY:-change-me-to-a-secure-random-secret}
+      - BIND_HOST=0.0.0.0
+      - BIND_PORT=8100
+      - BROWSER_POOL_SIZE=${BROWSER_POOL_SIZE:-3}
+      - BROWSER_MAX_USES=${BROWSER_MAX_USES:-5}
+      - PROXY_URL=${PROXY_URL:-}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8100/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

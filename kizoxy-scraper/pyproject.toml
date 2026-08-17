@@ -1,0 +1,47 @@
+[project]
+name = "kizoxy-scraper"
+version = "0.1.0"
+description = "Internal scraping microservice for YouTube and TikTok data extraction"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "camoufox[geoip]>=0.4",
+    "curl_cffi>=0.7",
+    "yt-dlp>=2026.1.1",
+    "pydantic-settings>=2.6",
+    "structlog>=24.4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.24",
+    "httpx>=0.27",
+    "ruff",
+    "black",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "live: marks tests as live integration tests against real network targets (deselect with '-m \"not live\"')",
+]
+
+[tool.ruff.lint]
+ignore = ["BLE001", "S110"]
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
