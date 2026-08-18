@@ -51,16 +51,16 @@ COPY pyproject.toml .
 COPY README.md .
 RUN pip install --no-cache-dir .
 
-# Camoufox stores browsers in a per-user cache. Pin one shared path so the
-# root build step and the non-root runtime user resolve the same installation.
-ENV XDG_CACHE_HOME=/app/.cache
-ENV GITHUB_TOKEN=""
-RUN python -m camoufox fetch
-
 COPY app/ ./app/
 
 RUN chown -R scraper:scraper /app
 USER scraper
+
+# Download Camoufox browser binaries AS the user that will actually run
+# the server — fetching before the USER switch (as root) put the binaries
+# in root's cache dir, which the non-root runtime user can't see.
+ENV GITHUB_TOKEN=""
+RUN python -m camoufox fetch
 
 EXPOSE 8100
 
